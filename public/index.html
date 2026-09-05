@@ -42,18 +42,20 @@
       transition: background 0.25s ease;
     }
 
+    /* Diamond / Ruby logo */
     .logo {
-      width: 42px;
-      height: 42px;
-      background: linear-gradient(135deg, var(--accent), #d97706);
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #f43f5e, #be123c);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
       margin-bottom: 1.4rem;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 1.1rem;
-      color: #000;
+      font-size: 1rem;
+      color: white;
+      box-shadow: 0 0 12px rgba(244, 63, 94, 0.4);
     }
 
     .nav-btn {
@@ -153,8 +155,6 @@
       margin-bottom: 0.6rem;
     }
 
-    .hero h1 span { color: var(--accent); }
-
     .hero p {
       color: var(--muted);
       font-size: 1.05rem;
@@ -195,7 +195,7 @@
 
     .hidden { display: none !important; }
 
-    /* Settings Panel */
+    /* Settings */
     .settings-overlay {
       position: fixed;
       inset: 0;
@@ -223,10 +223,7 @@
       margin-bottom: 1.8rem;
     }
 
-    .settings-header h2 {
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
+    .settings-header h2 { font-size: 1.2rem; font-weight: 600; }
 
     .close-btn {
       background: none;
@@ -236,9 +233,7 @@
       cursor: pointer;
     }
 
-    .setting-group {
-      margin-bottom: 1.8rem;
-    }
+    .setting-group { margin-bottom: 1.8rem; }
 
     .setting-group label {
       display: block;
@@ -269,18 +264,16 @@
 </head>
 <body>
 
-  <!-- Sidebar -->
   <div class="sidebar">
-    <div class="logo">C</div>
+    <div class="logo"></div>
     <button class="nav-btn active" onclick="goHome()">HOME</button>
     <button class="nav-btn" onclick="document.getElementById('searchInput').focus()">SEARCH</button>
     <button class="nav-btn" onclick="openSettings()" style="margin-top: auto;">SET</button>
   </div>
 
-  <!-- Main -->
   <div class="main">
     <div class="topbar">
-      <form class="search-form" onsubmit="return handleSearch(event)">
+      <form class="search-form" id="searchForm">
         <input type="text" id="searchInput" placeholder="Search or enter a URL..." autocomplete="off" />
         <button type="submit">Go</button>
       </form>
@@ -303,7 +296,7 @@
     </div>
   </div>
 
-  <!-- Settings Panel -->
+  <!-- Settings -->
   <div class="settings-overlay" id="settings">
     <div class="settings-panel">
       <div class="settings-header">
@@ -314,7 +307,7 @@
       <div class="setting-group">
         <label>Background Theme</label>
         <div class="color-options">
-          <button class="color-btn active" style="background:#060910" onclick="setTheme('dark')" title="Dark"></button>
+          <button class="color-btn" style="background:#060910" onclick="setTheme('dark')" title="Dark"></button>
           <button class="color-btn" style="background:#1a0a0a" onclick="setTheme('darkred')" title="Dark Red"></button>
           <button class="color-btn" style="background:#0a0f1a" onclick="setTheme('navy')" title="Navy"></button>
           <button class="color-btn" style="background:#0f0a1a" onclick="setTheme('purple')" title="Purple"></button>
@@ -332,6 +325,7 @@
     const browserFrame = document.getElementById('browser-frame');
     const searchInput = document.getElementById('searchInput');
     const settings = document.getElementById('settings');
+    const searchForm = document.getElementById('searchForm');
 
     // Themes
     const themes = {
@@ -354,9 +348,8 @@
       document.documentElement.style.setProperty('--accent', t.accent);
       document.documentElement.style.setProperty('--accent-hover', t.accent);
 
-      // Update active button
       document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+      if (event && event.target) event.target.classList.add('active');
 
       localStorage.setItem('crystal-theme', name);
     }
@@ -382,10 +375,11 @@
       searchInput.value = url;
     }
 
-    function handleSearch(e) {
+    // Fixed search handler
+    searchForm.addEventListener('submit', function(e) {
       e.preventDefault();
       let value = searchInput.value.trim();
-      if (!value) return false;
+      if (!value) return;
 
       if (value.startsWith('http://') || value.startsWith('https://')) {
         loadURL(value);
@@ -394,8 +388,7 @@
       } else {
         loadURL('https://duckduckgo.com/?q=' + encodeURIComponent(value));
       }
-      return false;
-    }
+    });
   </script>
 </body>
 </html>
