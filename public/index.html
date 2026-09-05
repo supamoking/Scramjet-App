@@ -1,66 +1,250 @@
-<!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-		/>
-		<title>Scramjet</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crystal</title>
+  <style>
+    :root {
+      --bg: #070b14;
+      --card: #0d1322;
+      --border: #1a2338;
+      --text: #e2e8f0;
+      --muted: #7a8ba3;
+      --accent: #8b5cf6;
+      --accent-hover: #a78bfa;
+      --topbar: #0a0f1c;
+    }
 
-		<link rel="shortcut icon" content="favicon.webp" />
-	
-		<script src="/scram/scramjet.all.js"></script>
-		<script src="/baremux/index.js"></script>
-		
-		<link rel="stylesheet" href="index.css" />
-		<script src="register-sw.js" defer></script>
-		<script src="search.js" defer></script>
-		<script src="index.js" defer></script>
-	</head>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-	<body>
-		<div title="Scramjet Logo" class="flex-center logo-wrapper header-center">
-			<img class="logo" src="sj.png" alt="Scramjet" />
-			<h1>Scramjet | MW</h1>
-		</div>
-		<div class="flex-center desc left-margin">
-			<p>
-				Scramjet is an experimental interception based web proxy designed to
-				evade internet censorship, bypass arbitrary web browser restrictions and
-				innovate web proxy technologies.
-			</p>
-		</div>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-		<form id="sj-form" class="flex-center">
-			<input
-				id="sj-search-engine"
-				value="https://www.google.com/search?q=%s"
-				type="hidden"
-			/>
-			<input id="sj-address" type="text" placeholder="Search the web freely" />
-		</form>
-		<div class="desc left-margin">
-			<p id="sj-error"></p>
-			<pre id="sj-error-code"></pre>
-		</div>
-		<footer>
-			<div>
-				<a
-					title="The Mercury Workshop GitHub organization"
-					href="https://github.com/MercuryWorkshop"
-					>Mercury Workshop</a
-				>
-				<a
-					title="The example demo app for Scramjet"
-					href="https://github.com/MercuryWorkshop/Scramjet-Demo"
-					>GitHub</a
-				>
-				<a title="License information" href="credits.html">Credits</a>
-			</div>
-			<div>
-				<span>Scramjet &copy; MW 2025</span>
-			</div>
-		</footer>
-	</body>
+    /* Top bar */
+    .topbar {
+      background: var(--topbar);
+      border-bottom: 1px solid var(--border);
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+
+    .home-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .home-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .search-form {
+      flex: 1;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .search-form input {
+      flex: 1;
+      background: #080d18;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .search-form input:focus {
+      border-color: var(--accent);
+    }
+
+    .search-form input::placeholder {
+      color: var(--muted);
+    }
+
+    .search-form button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .search-form button:hover {
+      background: var(--accent-hover);
+    }
+
+    /* Content */
+    .content {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #home-view {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2.4rem 2rem;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.6rem;
+      color: var(--text);
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.8rem;
+      line-height: 1.5;
+    }
+
+    .quick-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.1rem;
+      flex-wrap: wrap;
+    }
+
+    .quick-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.15s;
+    }
+
+    .quick-links a:hover {
+      color: var(--accent);
+    }
+
+    /* Browser frame */
+    #browser-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: none;
+      background: #fff;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <button class="home-btn" onclick="goHome()">Home</button>
+    <form class="search-form" onsubmit="return handleSearch(event)">
+      <input type="text" id="searchInput" placeholder="Search or enter a URL..." autocomplete="off" />
+      <button type="submit">Go</button>
+    </form>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <!-- Home -->
+    <div id="home-view">
+      <div class="card">
+        <div class="logo">Crystal</div>
+        <p class="subtitle">Clean. Fast. Private.<br>Type a search or URL above to begin.</p>
+        <div class="quick-links">
+          <a href="#" onclick="loadURL('https://youtube.com'); return false;">YouTube</a>
+          <a href="#" onclick="loadURL('https://x.com'); return false;">X</a>
+          <a href="#" onclick="loadURL('https://reddit.com'); return false;">Reddit</a>
+          <a href="#" onclick="loadURL('https://github.com'); return false;">GitHub</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proxied content -->
+    <iframe id="browser-frame"></iframe>
+  </div>
+
+  <script>
+    // This is a simplified frontend.
+    // For full Scramjet support you will later connect it to the real controller.
+    // For now this gives you the Crystal UI + basic navigation.
+
+    const homeView = document.getElementById('home-view');
+    const browserFrame = document.getElementById('browser-frame');
+    const searchInput = document.getElementById('searchInput');
+
+    function goHome() {
+      browserFrame.classList.add('hidden');
+      browserFrame.src = 'about:blank';
+      homeView.classList.remove('hidden');
+      searchInput.value = '';
+    }
+
+    function loadURL(url) {
+      homeView.classList.add('hidden');
+      browserFrame.classList.remove('hidden');
+      browserFrame.src = url;
+      searchInput.value = url;
+    }
+
+    function handleSearch(e) {
+      e.preventDefault();
+      let value = searchInput.value.trim();
+      if (!value) return false;
+
+      if (value.startsWith('http://') || value.startsWith('https://')) {
+        loadURL(value);
+      } else if (value.includes('.') && !value.includes(' ')) {
+        loadURL('https://' + value);
+      } else {
+        loadURL('https://duckduckgo.com/?q=' + encodeURIComponent(value));
+      }
+      return false;
+    }
+  </script>
+</body>
 </html>
+			
