@@ -6,21 +6,17 @@
   <title>Crystal</title>
   <style>
     :root {
-      --bg: #070b14;
-      --card: #0d1322;
-      --border: #1a2338;
-      --text: #e2e8f0;
-      --muted: #7a8ba3;
-      --accent: #8b5cf6;
-      --accent-hover: #a78bfa;
-      --topbar: #0a0f1c;
+      --bg: #060910;
+      --sidebar: #0a0e18;
+      --card: #0f1422;
+      --border: #1a2236;
+      --text: #e8edf5;
+      --muted: #8b9bb8;
+      --accent: #f59e0b;
+      --accent-hover: #fbbf24;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -28,79 +24,112 @@
       color: var(--text);
       height: 100vh;
       display: flex;
+      overflow: hidden;
+      transition: background 0.25s ease;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 72px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.2rem 0;
+      gap: 0.5rem;
+      flex-shrink: 0;
+      transition: background 0.25s ease;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--accent), #d97706);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      margin-bottom: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #000;
+    }
+
+    .nav-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 600;
+      flex-direction: column;
+      gap: 2px;
+      transition: all 0.15s;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--card);
+      color: var(--accent);
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
-    /* Top bar */
     .topbar {
-      background: var(--topbar);
+      padding: 0.9rem 1.4rem;
       border-bottom: 1px solid var(--border);
-      padding: 0.65rem 1rem;
       display: flex;
       align-items: center;
-      gap: 0.7rem;
-      flex-shrink: 0;
-      z-index: 100;
-    }
-
-    .home-btn {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.5rem 0.9rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .home-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
+      gap: 1rem;
+      background: var(--sidebar);
+      transition: background 0.25s ease;
     }
 
     .search-form {
       flex: 1;
+      max-width: 640px;
       display: flex;
       gap: 0.5rem;
     }
 
     .search-form input {
       flex: 1;
-      background: #080d18;
+      background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 0.55rem 1rem;
-      border-radius: 8px;
+      padding: 0.7rem 1.1rem;
+      border-radius: 12px;
       font-size: 0.95rem;
       outline: none;
     }
 
-    .search-form input:focus {
-      border-color: var(--accent);
-    }
-
-    .search-form input::placeholder {
-      color: var(--muted);
-    }
+    .search-form input:focus { border-color: var(--accent); }
+    .search-form input::placeholder { color: var(--muted); }
 
     .search-form button {
       background: var(--accent);
-      color: white;
+      color: #000;
       border: none;
-      padding: 0 1.2rem;
-      border-radius: 8px;
+      padding: 0 1.3rem;
+      border-radius: 12px;
       font-weight: 600;
       cursor: pointer;
-      font-size: 0.9rem;
     }
 
-    .search-form button:hover {
-      background: var(--accent-hover);
-    }
+    .search-form button:hover { background: var(--accent-hover); }
 
-    /* Content */
     .content {
       flex: 1;
       position: relative;
@@ -112,57 +141,50 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 2rem;
     }
 
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 2.4rem 2rem;
-      width: 100%;
-      max-width: 420px;
-      text-align: center;
-    }
+    .hero { text-align: center; max-width: 480px; }
 
-    .logo {
-      font-size: 1.6rem;
+    .hero h1 {
+      font-size: 2.4rem;
       font-weight: 700;
       letter-spacing: -0.03em;
       margin-bottom: 0.6rem;
-      color: var(--text);
     }
 
-    .logo span {
-      color: var(--accent);
-    }
+    .hero h1 span { color: var(--accent); }
 
-    .subtitle {
+    .hero p {
       color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 1.8rem;
+      font-size: 1.05rem;
+      margin-bottom: 2rem;
       line-height: 1.5;
     }
 
     .quick-links {
       display: flex;
       justify-content: center;
-      gap: 1.1rem;
+      gap: 1rem;
       flex-wrap: wrap;
     }
 
     .quick-links a {
-      color: var(--muted);
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
       text-decoration: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 10px;
       font-size: 0.9rem;
-      transition: color 0.15s;
+      transition: all 0.15s;
     }
 
     .quick-links a:hover {
+      border-color: var(--accent);
       color: var(--accent);
     }
 
-    /* Browser frame */
     #browser-frame {
       width: 100%;
       height: 100%;
@@ -171,50 +193,180 @@
       background: #fff;
     }
 
-    .hidden {
-      display: none !important;
+    .hidden { display: none !important; }
+
+    /* Settings Panel */
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: none;
+      justify-content: flex-end;
+    }
+
+    .settings-overlay.open { display: flex; }
+
+    .settings-panel {
+      width: 320px;
+      height: 100%;
+      background: var(--sidebar);
+      border-left: 1px solid var(--border);
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.8rem;
+    }
+
+    .settings-header h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .setting-group {
+      margin-bottom: 1.8rem;
+    }
+
+    .setting-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.7rem;
+    }
+
+    .color-options {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.6rem;
+    }
+
+    .color-btn {
+      height: 42px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .color-btn:hover, .color-btn.active {
+      border-color: var(--accent);
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
 
-  <!-- Top bar -->
-  <div class="topbar">
-    <button class="home-btn" onclick="goHome()">Home</button>
-    <form class="search-form" onsubmit="return handleSearch(event)">
-      <input type="text" id="searchInput" placeholder="Search or enter a URL..." autocomplete="off" />
-      <button type="submit">Go</button>
-    </form>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">C</div>
+    <button class="nav-btn active" onclick="goHome()">HOME</button>
+    <button class="nav-btn" onclick="document.getElementById('searchInput').focus()">SEARCH</button>
+    <button class="nav-btn" onclick="openSettings()" style="margin-top: auto;">SET</button>
   </div>
 
-  <!-- Content -->
-  <div class="content">
-    <!-- Home -->
-    <div id="home-view">
-      <div class="card">
-        <div class="logo">Crystal</div>
-        <p class="subtitle">Clean. Fast. Private.<br>Type a search or URL above to begin.</p>
-        <div class="quick-links">
-          <a href="#" onclick="loadURL('https://youtube.com'); return false;">YouTube</a>
-          <a href="#" onclick="loadURL('https://x.com'); return false;">X</a>
-          <a href="#" onclick="loadURL('https://reddit.com'); return false;">Reddit</a>
-          <a href="#" onclick="loadURL('https://github.com'); return false;">GitHub</a>
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <form class="search-form" onsubmit="return handleSearch(event)">
+        <input type="text" id="searchInput" placeholder="Search or enter a URL..." autocomplete="off" />
+        <button type="submit">Go</button>
+      </form>
+    </div>
+
+    <div class="content">
+      <div id="home-view">
+        <div class="hero">
+          <h1>Crystal</h1>
+          <p>Your calm corner of the internet.<br>Search or type a URL to begin.</p>
+          <div class="quick-links">
+            <a href="#" onclick="loadURL('https://youtube.com'); return false;">YouTube</a>
+            <a href="#" onclick="loadURL('https://x.com'); return false;">X</a>
+            <a href="#" onclick="loadURL('https://reddit.com'); return false;">Reddit</a>
+            <a href="#" onclick="loadURL('https://github.com'); return false;">GitHub</a>
+          </div>
+        </div>
+      </div>
+      <iframe id="browser-frame"></iframe>
+    </div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div class="settings-overlay" id="settings">
+    <div class="settings-panel">
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button class="close-btn" onclick="closeSettings()">×</button>
+      </div>
+
+      <div class="setting-group">
+        <label>Background Theme</label>
+        <div class="color-options">
+          <button class="color-btn active" style="background:#060910" onclick="setTheme('dark')" title="Dark"></button>
+          <button class="color-btn" style="background:#1a0a0a" onclick="setTheme('darkred')" title="Dark Red"></button>
+          <button class="color-btn" style="background:#0a0f1a" onclick="setTheme('navy')" title="Navy"></button>
+          <button class="color-btn" style="background:#0f0a1a" onclick="setTheme('purple')" title="Purple"></button>
+          <button class="color-btn" style="background:#0a1a0f" onclick="setTheme('green')" title="Dark Green"></button>
+          <button class="color-btn" style="background:#1a120a" onclick="setTheme('brown')" title="Dark Brown"></button>
+          <button class="color-btn" style="background:#0a0a0a" onclick="setTheme('black')" title="True Black"></button>
+          <button class="color-btn" style="background:#12121a" onclick="setTheme('slate')" title="Slate"></button>
         </div>
       </div>
     </div>
-
-    <!-- Proxied content -->
-    <iframe id="browser-frame"></iframe>
   </div>
 
   <script>
-    // This is a simplified frontend.
-    // For full Scramjet support you will later connect it to the real controller.
-    // For now this gives you the Crystal UI + basic navigation.
-
     const homeView = document.getElementById('home-view');
     const browserFrame = document.getElementById('browser-frame');
     const searchInput = document.getElementById('searchInput');
+    const settings = document.getElementById('settings');
+
+    // Themes
+    const themes = {
+      dark:     { bg: '#060910', sidebar: '#0a0e18', card: '#0f1422', border: '#1a2236', accent: '#f59e0b' },
+      darkred:  { bg: '#1a0a0a', sidebar: '#220f0f', card: '#2a1414', border: '#3d1f1f', accent: '#ef4444' },
+      navy:     { bg: '#0a0f1a', sidebar: '#0d1424', card: '#121c30', border: '#1e2a42', accent: '#3b82f6' },
+      purple:   { bg: '#0f0a1a', sidebar: '#160f24', card: '#1c1430', border: '#2a1f42', accent: '#a78bfa' },
+      green:    { bg: '#0a1a0f', sidebar: '#0f2414', card: '#14301c', border: '#1f422a', accent: '#22c55e' },
+      brown:    { bg: '#1a120a', sidebar: '#24180f', card: '#302014', border: '#422e1f', accent: '#f59e0b' },
+      black:    { bg: '#0a0a0a', sidebar: '#111111', card: '#1a1a1a', border: '#2a2a2a', accent: '#f59e0b' },
+      slate:    { bg: '#12121a', sidebar: '#181822', card: '#1e1e2a', border: '#2c2c3a', accent: '#94a3b8' }
+    };
+
+    function setTheme(name) {
+      const t = themes[name];
+      document.documentElement.style.setProperty('--bg', t.bg);
+      document.documentElement.style.setProperty('--sidebar', t.sidebar);
+      document.documentElement.style.setProperty('--card', t.card);
+      document.documentElement.style.setProperty('--border', t.border);
+      document.documentElement.style.setProperty('--accent', t.accent);
+      document.documentElement.style.setProperty('--accent-hover', t.accent);
+
+      // Update active button
+      document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      localStorage.setItem('crystal-theme', name);
+    }
+
+    // Load saved theme
+    const saved = localStorage.getItem('crystal-theme') || 'dark';
+    setTheme(saved);
+
+    function openSettings() { settings.classList.add('open'); }
+    function closeSettings() { settings.classList.remove('open'); }
 
     function goHome() {
       browserFrame.classList.add('hidden');
