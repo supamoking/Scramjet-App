@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crystal</title>
+
+  <!-- Required Scramjet scripts -->
+  <script src="/scram/scramjet.all.js"></script>
+  <script src="/baremux/index.js"></script>
+  <script src="/register-sw.js"></script>
+
   <style>
     :root {
       --bg: #060910;
@@ -13,7 +19,6 @@
       --text: #e8edf5;
       --muted: #8b9bb8;
       --accent: #f59e0b;
-      --accent-hover: #fbbf24;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,7 +30,6 @@
       height: 100vh;
       display: flex;
       overflow: hidden;
-      transition: background 0.25s ease;
     }
 
     .sidebar {
@@ -37,7 +41,6 @@
       align-items: center;
       padding: 1.2rem 0;
       gap: 0.5rem;
-      flex-shrink: 0;
     }
 
     .logo {
@@ -57,13 +60,11 @@
       background: transparent;
       color: var(--muted);
       cursor: pointer;
+      font-size: 0.65rem;
+      font-weight: 600;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.65rem;
-      font-weight: 600;
-      flex-direction: column;
-      gap: 2px;
     }
 
     .nav-btn:hover, .nav-btn.active {
@@ -81,10 +82,9 @@
     .topbar {
       padding: 0.9rem 1.4rem;
       border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 1rem;
       background: var(--sidebar);
+      display: flex;
+      gap: 0.5rem;
     }
 
     .search-form {
@@ -106,7 +106,6 @@
     }
 
     .search-form input:focus { border-color: var(--accent); }
-    .search-form input::placeholder { color: var(--muted); }
 
     .search-form button {
       background: var(--accent);
@@ -129,28 +128,27 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 2rem;
     }
 
-    .hero { text-align: center; max-width: 480px; }
+    .hero {
+      text-align: center;
+      max-width: 480px;
+    }
 
     .hero h1 {
       font-size: 2.4rem;
-      font-weight: 700;
       margin-bottom: 0.6rem;
     }
 
     .hero p {
       color: var(--muted);
-      font-size: 1.05rem;
       margin-bottom: 2rem;
-      line-height: 1.5;
     }
 
     .quick-links {
       display: flex;
-      justify-content: center;
       gap: 1rem;
+      justify-content: center;
       flex-wrap: wrap;
     }
 
@@ -161,76 +159,18 @@
       text-decoration: none;
       padding: 0.6rem 1.2rem;
       border-radius: 10px;
-      font-size: 0.9rem;
     }
 
-    .quick-links a:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    #frame-container {
-      width: 100%;
-      height: 100%;
-      display: none;
-    }
-
-    #frame-container iframe {
+    #sj-frame {
+      position: absolute;
+      inset: 0;
       width: 100%;
       height: 100%;
       border: none;
+      display: none;
     }
 
     .hidden { display: none !important; }
-
-    .settings-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 200;
-      display: none;
-      justify-content: flex-end;
-    }
-
-    .settings-overlay.open { display: flex; }
-
-    .settings-panel {
-      width: 320px;
-      height: 100%;
-      background: var(--sidebar);
-      border-left: 1px solid var(--border);
-      padding: 1.5rem;
-    }
-
-    .settings-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.8rem;
-    }
-
-    .close-btn {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 1.4rem;
-      cursor: pointer;
-    }
-
-    .color-options {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.6rem;
-    }
-
-    .color-btn {
-      height: 42px;
-      border-radius: 10px;
-      border: 2px solid transparent;
-      cursor: pointer;
-    }
-
-    .color-btn.active { border-color: var(--accent); }
   </style>
 </head>
 <body>
@@ -238,14 +178,13 @@
   <div class="sidebar">
     <div class="logo"></div>
     <button class="nav-btn active" onclick="goHome()">HOME</button>
-    <button class="nav-btn" onclick="document.getElementById('searchInput').focus()">SEARCH</button>
-    <button class="nav-btn" onclick="openSettings()" style="margin-top: auto;">SET</button>
+    <button class="nav-btn" onclick="document.getElementById('address').focus()">SEARCH</button>
   </div>
 
   <div class="main">
     <div class="topbar">
-      <form class="search-form" id="searchForm">
-        <input type="text" id="searchInput" placeholder="Search or enter a URL..." autocomplete="off" />
+      <form class="search-form" id="sj-form">
+        <input id="address" type="text" placeholder="Search or enter a URL..." autocomplete="off" />
         <button type="submit">Go</button>
       </form>
     </div>
@@ -256,140 +195,94 @@
           <h1>Crystal</h1>
           <p>Your calm corner of the internet.<br>Search or type a URL to begin.</p>
           <div class="quick-links">
-            <a href="#" onclick="navigate('https://youtube.com'); return false;">YouTube</a>
-            <a href="#" onclick="navigate('https://x.com'); return false;">X</a>
-            <a href="#" onclick="navigate('https://reddit.com'); return false;">Reddit</a>
-            <a href="#" onclick="navigate('https://github.com'); return false;">GitHub</a>
+            <a href="#" onclick="doSearch('https://youtube.com'); return false;">YouTube</a>
+            <a href="#" onclick="doSearch('https://x.com'); return false;">X</a>
+            <a href="#" onclick="doSearch('https://reddit.com'); return false;">Reddit</a>
+            <a href="#" onclick="doSearch('https://github.com'); return false;">GitHub</a>
           </div>
         </div>
       </div>
 
-      <div id="frame-container"></div>
-    </div>
-  </div>
-
-  <div class="settings-overlay" id="settings">
-    <div class="settings-panel">
-      <div class="settings-header">
-        <h2>Settings</h2>
-        <button class="close-btn" onclick="closeSettings()">×</button>
-      </div>
-      <div>
-        <label style="color:var(--muted); font-size:0.85rem; display:block; margin-bottom:0.7rem;">Background Theme</label>
-        <div class="color-options">
-          <button class="color-btn" style="background:#060910" onclick="setTheme('dark')"></button>
-          <button class="color-btn" style="background:#1a0a0a" onclick="setTheme('darkred')"></button>
-          <button class="color-btn" style="background:#0a0f1a" onclick="setTheme('navy')"></button>
-          <button class="color-btn" style="background:#0f0a1a" onclick="setTheme('purple')"></button>
-          <button class="color-btn" style="background:#0a1a0f" onclick="setTheme('green')"></button>
-          <button class="color-btn" style="background:#1a120a" onclick="setTheme('brown')"></button>
-          <button class="color-btn" style="background:#0a0a0a" onclick="setTheme('black')"></button>
-          <button class="color-btn" style="background:#12121a" onclick="setTheme('slate')"></button>
-        </div>
-      </div>
+      <!-- Scramjet will put the frame here -->
     </div>
   </div>
 
   <script>
-    // ========== Theme system ==========
-    const themes = {
-      dark:     { bg: '#060910', sidebar: '#0a0e18', card: '#0f1422', border: '#1a2236', accent: '#f59e0b' },
-      darkred:  { bg: '#1a0a0a', sidebar: '#220f0f', card: '#2a1414', border: '#3d1f1f', accent: '#ef4444' },
-      navy:     { bg: '#0a0f1a', sidebar: '#0d1424', card: '#121c30', border: '#1e2a42', accent: '#3b82f6' },
-      purple:   { bg: '#0f0a1a', sidebar: '#160f24', card: '#1c1430', border: '#2a1f42', accent: '#a78bfa' },
-      green:    { bg: '#0a1a0f', sidebar: '#0f2414', card: '#14301c', border: '#1f422a', accent: '#22c55e' },
-      brown:    { bg: '#1a120a', sidebar: '#24180f', card: '#302014', border: '#422e1f', accent: '#f59e0b' },
-      black:    { bg: '#0a0a0a', sidebar: '#111111', card: '#1a1a1a', border: '#2a2a2a', accent: '#f59e0b' },
-      slate:    { bg: '#12121a', sidebar: '#181822', card: '#1e1e2a', border: '#2c2c3a', accent: '#94a3b8' }
-    };
+    const { ScramjetController } = $scramjetLoadController();
 
-    function setTheme(name) {
-      const t = themes[name];
-      document.documentElement.style.setProperty('--bg', t.bg);
-      document.documentElement.style.setProperty('--sidebar', t.sidebar);
-      document.documentElement.style.setProperty('--card', t.card);
-      document.documentElement.style.setProperty('--border', t.border);
-      document.documentElement.style.setProperty('--accent', t.accent);
-      localStorage.setItem('crystal-theme', name);
-    }
-
-    setTheme(localStorage.getItem('crystal-theme') || 'dark');
-
-    function openSettings() { document.getElementById('settings').classList.add('open'); }
-    function closeSettings() { document.getElementById('settings').classList.remove('open'); }
-
-    // ========== Scramjet + Navigation ==========
-    let scramjetFrame = null;
-
-    async function initScramjet() {
-      try {
-        // Register the service worker that Scramjet-App provides
-        if ('serviceWorker' in navigator) {
-          await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-          await navigator.serviceWorker.ready;
-        }
-
-        // Try to use the global controller if the original scripts are still present
-        if (window.$scramjetLoadController) {
-          const { ScramjetController } = $scramjetLoadController();
-          const scramjet = new ScramjetController({ prefix: '/scramjet/' });
-          await scramjet.init();
-
-          const container = document.getElementById('frame-container');
-          scramjetFrame = scramjet.createFrame();
-          container.appendChild(scramjetFrame.frame);
-          scramjetFrame.frame.style.width = '100%';
-          scramjetFrame.frame.style.height = '100%';
-          scramjetFrame.frame.style.border = 'none';
-
-          console.log('Scramjet ready');
-        } else {
-          console.warn('Scramjet controller not found – falling back');
-        }
-      } catch (err) {
-        console.error('Scramjet init failed:', err);
-      }
-    }
-
-    function goHome() {
-      document.getElementById('home-view').classList.remove('hidden');
-      document.getElementById('frame-container').style.display = 'none';
-      document.getElementById('searchInput').value = '';
-    }
-
-    function navigate(url) {
-      document.getElementById('home-view').classList.add('hidden');
-      document.getElementById('frame-container').style.display = 'block';
-
-      if (scramjetFrame && scramjetFrame.go) {
-        scramjetFrame.go(url);
-      } else {
-        // Fallback if Scramjet isn't ready
-        window.open(url, '_blank');
-      }
-
-      document.getElementById('searchInput').value = url;
-    }
-
-    document.getElementById('searchForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      let value = document.getElementById('searchInput').value.trim();
-      if (!value) return;
-
-      let url;
-      if (value.startsWith('http://') || value.startsWith('https://')) {
-        url = value;
-      } else if (value.includes('.') && !value.includes(' ')) {
-        url = 'https://' + value;
-      } else {
-        url = 'https://duckduckgo.com/?q=' + encodeURIComponent(value);
-      }
-
-      navigate(url);
+    const scramjet = new ScramjetController({
+      files: {
+        wasm: "/scram/scramjet.wasm.wasm",
+        all: "/scram/scramjet.all.js",
+        sync: "/scram/scramjet.sync.js",
+      },
     });
 
-    // Start Scramjet
-    initScramjet();
+    scramjet.init();
+
+    const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+
+    const form = document.getElementById("sj-form");
+    const address = document.getElementById("address");
+    const homeView = document.getElementById("home-view");
+
+    let currentFrame = null;
+
+    async function doSearch(raw) {
+      try {
+        await registerSW();
+      } catch (err) {
+        alert("Service Worker failed to register: " + err);
+        return;
+      }
+
+      let url = raw.trim();
+      if (!url) return;
+
+      // Simple search / URL detection
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        if (url.includes(".") && !url.includes(" ")) {
+          url = "https://" + url;
+        } else {
+          url = "https://duckduckgo.com/?q=" + encodeURIComponent(url);
+        }
+      }
+
+      // Set transport (same as original Scramjet-App)
+      let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
+      if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
+        await connection.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
+      }
+
+      // Hide home and show frame
+      homeView.classList.add("hidden");
+
+      if (currentFrame) {
+        currentFrame.frame.remove();
+      }
+
+      currentFrame = scramjet.createFrame();
+      currentFrame.frame.id = "sj-frame";
+      currentFrame.frame.style.display = "block";
+      document.querySelector(".content").appendChild(currentFrame.frame);
+
+      currentFrame.go(url);
+      address.value = url;
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      doSearch(address.value);
+    });
+
+    function goHome() {
+      if (currentFrame) {
+        currentFrame.frame.remove();
+        currentFrame = null;
+      }
+      homeView.classList.remove("hidden");
+      address.value = "";
+    }
   </script>
 </body>
 </html>
