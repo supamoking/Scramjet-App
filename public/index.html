@@ -4,12 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crystal</title>
-
-  <!-- Required Scramjet scripts -->
-  <script src="/scram/scramjet.all.js"></script>
-  <script src="/baremux/index.js"></script>
-  <script src="/register-sw.js"></script>
-
   <style>
     :root {
       --bg: #060910;
@@ -62,12 +56,9 @@
       cursor: pointer;
       font-size: 0.65rem;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
 
-    .nav-btn:hover, .nav-btn.active {
+    .nav-btn:hover {
       background: var(--card);
       color: var(--accent);
     }
@@ -76,7 +67,6 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
 
     .topbar {
@@ -119,12 +109,6 @@
 
     .content {
       flex: 1;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #home-view {
-      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -160,129 +144,54 @@
       padding: 0.6rem 1.2rem;
       border-radius: 10px;
     }
-
-    #sj-frame {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: none;
-      display: none;
-    }
-
-    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
   <div class="sidebar">
     <div class="logo"></div>
-    <button class="nav-btn active" onclick="goHome()">HOME</button>
-    <button class="nav-btn" onclick="document.getElementById('address').focus()">SEARCH</button>
+    <button class="nav-btn" onclick="location.reload()">HOME</button>
   </div>
 
   <div class="main">
     <div class="topbar">
-      <form class="search-form" id="sj-form">
-        <input id="address" type="text" placeholder="Search or enter a URL..." autocomplete="off" />
+      <form class="search-form" id="searchForm">
+        <input id="searchInput" type="text" placeholder="Search or enter a URL..." autocomplete="off" />
         <button type="submit">Go</button>
       </form>
     </div>
 
     <div class="content">
-      <div id="home-view">
-        <div class="hero">
-          <h1>Crystal</h1>
-          <p>Your calm corner of the internet.<br>Search or type a URL to begin.</p>
-          <div class="quick-links">
-            <a href="#" onclick="doSearch('https://youtube.com'); return false;">YouTube</a>
-            <a href="#" onclick="doSearch('https://x.com'); return false;">X</a>
-            <a href="#" onclick="doSearch('https://reddit.com'); return false;">Reddit</a>
-            <a href="#" onclick="doSearch('https://github.com'); return false;">GitHub</a>
-          </div>
+      <div class="hero">
+        <h1>Crystal</h1>
+        <p>Your calm corner of the internet.<br>Search or type a URL to begin.</p>
+        <div class="quick-links">
+          <a href="https://youtube.com" target="_blank">YouTube</a>
+          <a href="https://x.com" target="_blank">X</a>
+          <a href="https://reddit.com" target="_blank">Reddit</a>
+          <a href="https://github.com" target="_blank">GitHub</a>
         </div>
       </div>
-
-      <!-- Scramjet will put the frame here -->
     </div>
   </div>
 
   <script>
-    const { ScramjetController } = $scramjetLoadController();
-
-    const scramjet = new ScramjetController({
-      files: {
-        wasm: "/scram/scramjet.wasm.wasm",
-        all: "/scram/scramjet.all.js",
-        sync: "/scram/scramjet.sync.js",
-      },
-    });
-
-    scramjet.init();
-
-    const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-
-    const form = document.getElementById("sj-form");
-    const address = document.getElementById("address");
-    const homeView = document.getElementById("home-view");
-
-    let currentFrame = null;
-
-    async function doSearch(raw) {
-      try {
-        await registerSW();
-      } catch (err) {
-        alert("Service Worker failed to register: " + err);
-        return;
-      }
-
-      let url = raw.trim();
-      if (!url) return;
-
-      // Simple search / URL detection
-      if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        if (url.includes(".") && !url.includes(" ")) {
-          url = "https://" + url;
-        } else {
-          url = "https://duckduckgo.com/?q=" + encodeURIComponent(url);
-        }
-      }
-
-      // Set transport (same as original Scramjet-App)
-      let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
-      if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
-        await connection.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
-      }
-
-      // Hide home and show frame
-      homeView.classList.add("hidden");
-
-      if (currentFrame) {
-        currentFrame.frame.remove();
-      }
-
-      currentFrame = scramjet.createFrame();
-      currentFrame.frame.id = "sj-frame";
-      currentFrame.frame.style.display = "block";
-      document.querySelector(".content").appendChild(currentFrame.frame);
-
-      currentFrame.go(url);
-      address.value = url;
-    }
-
-    form.addEventListener("submit", (e) => {
+    document.getElementById("searchForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      doSearch(address.value);
-    });
+      let value = document.getElementById("searchInput").value.trim();
+      if (!value) return;
 
-    function goHome() {
-      if (currentFrame) {
-        currentFrame.frame.remove();
-        currentFrame = null;
+      let url;
+      if (value.startsWith("http://") || value.startsWith("https://")) {
+        url = value;
+      } else if (value.includes(".") && !value.includes(" ")) {
+        url = "https://" + value;
+      } else {
+        url = "https://duckduckgo.com/?q=" + encodeURIComponent(value);
       }
-      homeView.classList.remove("hidden");
-      address.value = "";
-    }
+
+      window.open(url, "_blank");
+    });
   </script>
 </body>
 </html>
