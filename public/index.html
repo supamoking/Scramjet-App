@@ -28,7 +28,6 @@
       transition: background 0.25s ease;
     }
 
-    /* Sidebar */
     .sidebar {
       width: 72px;
       background: var(--sidebar);
@@ -39,22 +38,14 @@
       padding: 1.2rem 0;
       gap: 0.5rem;
       flex-shrink: 0;
-      transition: background 0.25s ease;
     }
 
-    /* Diamond / Ruby logo */
     .logo {
       width: 40px;
       height: 40px;
       background: linear-gradient(135deg, #f43f5e, #be123c);
       clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
       margin-bottom: 1.4rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1rem;
-      color: white;
       box-shadow: 0 0 12px rgba(244, 63, 94, 0.4);
     }
 
@@ -73,7 +64,6 @@
       font-weight: 600;
       flex-direction: column;
       gap: 2px;
-      transition: all 0.15s;
     }
 
     .nav-btn:hover, .nav-btn.active {
@@ -81,7 +71,6 @@
       color: var(--accent);
     }
 
-    /* Main */
     .main {
       flex: 1;
       display: flex;
@@ -96,7 +85,6 @@
       align-items: center;
       gap: 1rem;
       background: var(--sidebar);
-      transition: background 0.25s ease;
     }
 
     .search-form {
@@ -130,8 +118,6 @@
       cursor: pointer;
     }
 
-    .search-form button:hover { background: var(--accent-hover); }
-
     .content {
       flex: 1;
       position: relative;
@@ -151,7 +137,6 @@
     .hero h1 {
       font-size: 2.4rem;
       font-weight: 700;
-      letter-spacing: -0.03em;
       margin-bottom: 0.6rem;
     }
 
@@ -177,7 +162,6 @@
       padding: 0.6rem 1.2rem;
       border-radius: 10px;
       font-size: 0.9rem;
-      transition: all 0.15s;
     }
 
     .quick-links a:hover {
@@ -185,17 +169,20 @@
       color: var(--accent);
     }
 
-    #browser-frame {
+    #frame-container {
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+
+    #frame-container iframe {
       width: 100%;
       height: 100%;
       border: none;
-      display: none;
-      background: #fff;
     }
 
     .hidden { display: none !important; }
 
-    /* Settings */
     .settings-overlay {
       position: fixed;
       inset: 0;
@@ -213,7 +200,6 @@
       background: var(--sidebar);
       border-left: 1px solid var(--border);
       padding: 1.5rem;
-      overflow-y: auto;
     }
 
     .settings-header {
@@ -223,23 +209,12 @@
       margin-bottom: 1.8rem;
     }
 
-    .settings-header h2 { font-size: 1.2rem; font-weight: 600; }
-
     .close-btn {
       background: none;
       border: none;
       color: var(--muted);
       font-size: 1.4rem;
       cursor: pointer;
-    }
-
-    .setting-group { margin-bottom: 1.8rem; }
-
-    .setting-group label {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 0.7rem;
     }
 
     .color-options {
@@ -253,13 +228,9 @@
       border-radius: 10px;
       border: 2px solid transparent;
       cursor: pointer;
-      transition: all 0.15s;
     }
 
-    .color-btn:hover, .color-btn.active {
-      border-color: var(--accent);
-      transform: scale(1.05);
-    }
+    .color-btn.active { border-color: var(--accent); }
   </style>
 </head>
 <body>
@@ -285,49 +256,42 @@
           <h1>Crystal</h1>
           <p>Your calm corner of the internet.<br>Search or type a URL to begin.</p>
           <div class="quick-links">
-            <a href="#" onclick="loadURL('https://youtube.com'); return false;">YouTube</a>
-            <a href="#" onclick="loadURL('https://x.com'); return false;">X</a>
-            <a href="#" onclick="loadURL('https://reddit.com'); return false;">Reddit</a>
-            <a href="#" onclick="loadURL('https://github.com'); return false;">GitHub</a>
+            <a href="#" onclick="navigate('https://youtube.com'); return false;">YouTube</a>
+            <a href="#" onclick="navigate('https://x.com'); return false;">X</a>
+            <a href="#" onclick="navigate('https://reddit.com'); return false;">Reddit</a>
+            <a href="#" onclick="navigate('https://github.com'); return false;">GitHub</a>
           </div>
         </div>
       </div>
-      <iframe id="browser-frame"></iframe>
+
+      <div id="frame-container"></div>
     </div>
   </div>
 
-  <!-- Settings -->
   <div class="settings-overlay" id="settings">
     <div class="settings-panel">
       <div class="settings-header">
         <h2>Settings</h2>
         <button class="close-btn" onclick="closeSettings()">×</button>
       </div>
-
-      <div class="setting-group">
-        <label>Background Theme</label>
+      <div>
+        <label style="color:var(--muted); font-size:0.85rem; display:block; margin-bottom:0.7rem;">Background Theme</label>
         <div class="color-options">
-          <button class="color-btn" style="background:#060910" onclick="setTheme('dark')" title="Dark"></button>
-          <button class="color-btn" style="background:#1a0a0a" onclick="setTheme('darkred')" title="Dark Red"></button>
-          <button class="color-btn" style="background:#0a0f1a" onclick="setTheme('navy')" title="Navy"></button>
-          <button class="color-btn" style="background:#0f0a1a" onclick="setTheme('purple')" title="Purple"></button>
-          <button class="color-btn" style="background:#0a1a0f" onclick="setTheme('green')" title="Dark Green"></button>
-          <button class="color-btn" style="background:#1a120a" onclick="setTheme('brown')" title="Dark Brown"></button>
-          <button class="color-btn" style="background:#0a0a0a" onclick="setTheme('black')" title="True Black"></button>
-          <button class="color-btn" style="background:#12121a" onclick="setTheme('slate')" title="Slate"></button>
+          <button class="color-btn" style="background:#060910" onclick="setTheme('dark')"></button>
+          <button class="color-btn" style="background:#1a0a0a" onclick="setTheme('darkred')"></button>
+          <button class="color-btn" style="background:#0a0f1a" onclick="setTheme('navy')"></button>
+          <button class="color-btn" style="background:#0f0a1a" onclick="setTheme('purple')"></button>
+          <button class="color-btn" style="background:#0a1a0f" onclick="setTheme('green')"></button>
+          <button class="color-btn" style="background:#1a120a" onclick="setTheme('brown')"></button>
+          <button class="color-btn" style="background:#0a0a0a" onclick="setTheme('black')"></button>
+          <button class="color-btn" style="background:#12121a" onclick="setTheme('slate')"></button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const homeView = document.getElementById('home-view');
-    const browserFrame = document.getElementById('browser-frame');
-    const searchInput = document.getElementById('searchInput');
-    const settings = document.getElementById('settings');
-    const searchForm = document.getElementById('searchForm');
-
-    // Themes
+    // ========== Theme system ==========
     const themes = {
       dark:     { bg: '#060910', sidebar: '#0a0e18', card: '#0f1422', border: '#1a2236', accent: '#f59e0b' },
       darkred:  { bg: '#1a0a0a', sidebar: '#220f0f', card: '#2a1414', border: '#3d1f1f', accent: '#ef4444' },
@@ -346,50 +310,86 @@
       document.documentElement.style.setProperty('--card', t.card);
       document.documentElement.style.setProperty('--border', t.border);
       document.documentElement.style.setProperty('--accent', t.accent);
-      document.documentElement.style.setProperty('--accent-hover', t.accent);
-
-      document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-      if (event && event.target) event.target.classList.add('active');
-
       localStorage.setItem('crystal-theme', name);
     }
 
-    // Load saved theme
-    const saved = localStorage.getItem('crystal-theme') || 'dark';
-    setTheme(saved);
+    setTheme(localStorage.getItem('crystal-theme') || 'dark');
 
-    function openSettings() { settings.classList.add('open'); }
-    function closeSettings() { settings.classList.remove('open'); }
+    function openSettings() { document.getElementById('settings').classList.add('open'); }
+    function closeSettings() { document.getElementById('settings').classList.remove('open'); }
+
+    // ========== Scramjet + Navigation ==========
+    let scramjetFrame = null;
+
+    async function initScramjet() {
+      try {
+        // Register the service worker that Scramjet-App provides
+        if ('serviceWorker' in navigator) {
+          await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+          await navigator.serviceWorker.ready;
+        }
+
+        // Try to use the global controller if the original scripts are still present
+        if (window.$scramjetLoadController) {
+          const { ScramjetController } = $scramjetLoadController();
+          const scramjet = new ScramjetController({ prefix: '/scramjet/' });
+          await scramjet.init();
+
+          const container = document.getElementById('frame-container');
+          scramjetFrame = scramjet.createFrame();
+          container.appendChild(scramjetFrame.frame);
+          scramjetFrame.frame.style.width = '100%';
+          scramjetFrame.frame.style.height = '100%';
+          scramjetFrame.frame.style.border = 'none';
+
+          console.log('Scramjet ready');
+        } else {
+          console.warn('Scramjet controller not found – falling back');
+        }
+      } catch (err) {
+        console.error('Scramjet init failed:', err);
+      }
+    }
 
     function goHome() {
-      browserFrame.classList.add('hidden');
-      browserFrame.src = 'about:blank';
-      homeView.classList.remove('hidden');
-      searchInput.value = '';
+      document.getElementById('home-view').classList.remove('hidden');
+      document.getElementById('frame-container').style.display = 'none';
+      document.getElementById('searchInput').value = '';
     }
 
-    function loadURL(url) {
-      homeView.classList.add('hidden');
-      browserFrame.classList.remove('hidden');
-      browserFrame.src = url;
-      searchInput.value = url;
+    function navigate(url) {
+      document.getElementById('home-view').classList.add('hidden');
+      document.getElementById('frame-container').style.display = 'block';
+
+      if (scramjetFrame && scramjetFrame.go) {
+        scramjetFrame.go(url);
+      } else {
+        // Fallback if Scramjet isn't ready
+        window.open(url, '_blank');
+      }
+
+      document.getElementById('searchInput').value = url;
     }
 
-    // Fixed search handler
-    searchForm.addEventListener('submit', function(e) {
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      let value = searchInput.value.trim();
+      let value = document.getElementById('searchInput').value.trim();
       if (!value) return;
 
+      let url;
       if (value.startsWith('http://') || value.startsWith('https://')) {
-        loadURL(value);
+        url = value;
       } else if (value.includes('.') && !value.includes(' ')) {
-        loadURL('https://' + value);
+        url = 'https://' + value;
       } else {
-        loadURL('https://duckduckgo.com/?q=' + encodeURIComponent(value));
+        url = 'https://duckduckgo.com/?q=' + encodeURIComponent(value);
       }
+
+      navigate(url);
     });
+
+    // Start Scramjet
+    initScramjet();
   </script>
 </body>
 </html>
-			
